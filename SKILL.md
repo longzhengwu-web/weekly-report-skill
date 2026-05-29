@@ -1,6 +1,6 @@
 ---
 name: weekly-report
-description: Generate a concise, leader-facing daily or weekly work report from the user's Claude Code session activity (or aggregate user-provided daily reports into a weekly). Reads session transcripts, truncates to the chosen day or Monday–Sunday week, and writes a terse report (each item ~3 sentences) structured as 做了什么 → 产出/结论 → 下一步, split 公司/个人, layered 主线/调研/支线, ending with a 风险同步 section. Trigger when the user asks for a 日报 / 周报 / daily report / weekly report, "what did I work on today/this week", or sends daily reports and asks to roll them up into a weekly.
+description: Generate a concise, leader-facing daily or weekly work report from the user's coding-agent session activity — works with BOTH Claude Code and Codex transcripts (or aggregates user-provided team daily reports, extracting the user's own entries). Truncates to the chosen day or Monday–Sunday week; offers selectable output styles (详细/简约/要点); writes a terse report (做了什么 → 产出/结论 → 下一步) split 公司/个人, ending with a 风险同步 section; and self-evolves via a learned-preferences log and cross-week continuity. Trigger when the user asks for a 日报 / 周报 / daily report / weekly report, "what did I work on today/this week", or sends daily reports to roll up into a weekly.
 ---
 
 # Daily / Weekly Report (日报 / 周报)
@@ -33,8 +33,10 @@ just a count of outputs (结论 > 数量). Read that file first — it is the qu
 
 ## Step 2 — Collect raw activity
 
-The collector scans `~/.claude/projects/*/*.jsonl`, truncates to the window
-(local timezone), and emits a per-day digest as JSON. Save to a temp file:
+The collector scans **both** Claude Code (`~/.claude/projects/*/*.jsonl`) and Codex
+(`~/.codex/sessions/**/rollout-*.jsonl`) transcripts, truncates to the window
+(local timezone), and emits a per-day digest as JSON. `--source claude|codex|all`
+(default `all`) limits the source. Each thread carries a `source` field. Save to a temp file:
 
 **Daily** (single day, defaults to today):
 ```bash
@@ -53,6 +55,14 @@ The JSON has `mode`, `week_start`, `week_end`, `timezone`, and
 `user_prompts` (intent), `assistant_snippets` (outcomes), `tool_activity` (counts),
 and `files_touched`. If `day_count` is 0, tell the user there was no activity in
 that window and stop.
+
+## Step 2.5 — Pick the output style
+
+Before writing the full report, offer the output style (see `reference/styles.md`):
+render the SAME representative item in the 3 styles (A 详细 / B 简约 / C 要点速览) as a
+quick demo, then ask via AskUserQuestion which to use. Default to the user's last choice
+recorded in `learned_preferences.md` (else 详细版). Record the chosen style back to
+`learned_preferences.md`. If the user already named a style in their request, skip the ask.
 
 ## Step 3 — Write the report
 
@@ -125,6 +135,7 @@ missing, copy its `.example`).
 
 ## Reference
 - `reference/report_principles.md` — shared rules + the 结论>数量 quality bar.
+- `reference/styles.md` — output style presets (详细/简约/要点) + per-style demo.
 - `reference/learned_preferences.md` — evolving, user-specific preference log (local).
 - `reference/daily_report.md` — daily report prompt (tiered, event-aggregated).
 - `reference/weekly_report.md` — weekly report prompt (cross-day progression merge).
