@@ -1,6 +1,6 @@
 ---
 name: weekly-report
-description: Generate a human-readable daily or weekly work report from the user's Claude Code session activity. Reads session transcripts, truncates to the chosen day or Monday–Sunday week, and writes a report structured as 做了什么 → 产出/结论 → 下一步, covering work content, task progress, and risks. Trigger when the user asks for a 日报 / 周报 / daily report / weekly report / "what did I work on today/this week" from their Claude sessions.
+description: Generate a concise, leader-facing daily or weekly work report from the user's Claude Code session activity (or aggregate user-provided daily reports into a weekly). Reads session transcripts, truncates to the chosen day or Monday–Sunday week, and writes a terse report (each item ~3 sentences) structured as 做了什么 → 产出/结论 → 下一步, split 公司/个人, layered 主线/调研/支线, ending with a 风险同步 section. Trigger when the user asks for a 日报 / 周报 / daily report / weekly report, "what did I work on today/this week", or sends daily reports and asks to roll them up into a weekly.
 ---
 
 # Daily / Weekly Report (日报 / 周报)
@@ -17,6 +17,12 @@ just a count of outputs (结论 > 数量). Read that file first — it is the qu
 
 - If the user said 日报 / daily / "today" → **daily mode**.
 - If the user said 周报 / weekly / "this week" → **weekly mode**.
+- **If the user provides daily reports and asks for a weekly** (发日报→生成周报) →
+  **weekly-from-dailies mode**: skip Step 2 (collection); the supplied daily reports
+  ARE the input. Aggregate them per `reference/weekly_report.md` input option B
+  (merge same-thread items across days into progression arcs, consolidate risks,
+  re-layer 主线/调研/支线). Treat the dailies as the only source of truth; don't
+  invent facts beyond them.
 - If ambiguous, ask which one (and which day/week) before collecting.
 
 ## Step 2 — Collect raw activity
@@ -48,6 +54,10 @@ Read `reference/report_principles.md` (the quality bar) first, then the mode pro
 **Daily mode** → `reference/daily_report.md`; **Weekly mode** → `reference/weekly_report.md`.
 
 Core rules (full detail in `report_principles.md`):
+- **Concise — the leader grabs the point in ~3 sentences.** Each item ≈3 sentences
+  (做了什么+结论含关键指标 / 一句补充 / 下一步或风险). Cut background prose and
+  reasoning; keep conclusions, numbers, risks. Concision means dropping filler, NOT
+  dropping conclusions.
 - **Aggregate by initiative/thread, not by session.** Cluster sessions into real
   work threads; merge the same initiative's phases (e.g. build a feature → then
   monitor/measure it) and its cross-day progress into ONE item that tells the arc.
