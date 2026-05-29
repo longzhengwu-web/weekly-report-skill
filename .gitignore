@@ -5,3 +5,8 @@ __pycache__/
 *.json
 /reports/
 report_raw*.json
+# personal / self-evolving files: local only, seeded from *.example
+reference/project_categories.md
+reference/learned_preferences.md
+state/
+examples/

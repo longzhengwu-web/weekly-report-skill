@@ -56,15 +56,33 @@ git clone <this-repo> weekly-report
 cp -r weekly-report ~/.claude/skills/weekly-report
 ```
 
+## 自进化（越用越懂你）
+
+skill 会从反馈里学习，而不是每次重新教：
+
+- **学习偏好回路**：`reference/learned_preferences.md` 是一份偏好日志，优先级高于通用规则。你每次纠正/表达
+  新偏好，模型就追加一条，下次自动生效。
+- **跨周连续性**：`state/last_week.json` 存上周的「进行中/下周重点」；本周开头自动给出「上周计划完成情况」
+  并继承未完成项，报告从快照变连续线程。
+- **生成后自查自修**：出报告前强制走硬清单（同主线合并、≤3 句、人物归属、公司/个人分开、链接核实、对外脱敏），
+  违反就改了再给你。
+- **成长型 few-shot**：你认可的报告会存进 `examples/` 作为下次风格锚点。
+
+> 以上"会被写入/含个人数据"的文件（`learned_preferences.md`、`project_categories.md`、`state/`、`examples/`）
+> 都**本地保存、已被 gitignore**；仓库只放对应的 `*.example` 模板。**首次使用**：把 `*.example` 复制成去掉
+> `.example` 的同名文件即可（skill 也会在缺失时自动从模板初始化）。
+
 ## 结构
 
 ```
-SKILL.md                          编排：选模式 → 采集 → 写报告
-scripts/collect_week.py           采集器（按周/单日截断、分叉去重、头尾抓取、链接抽取）
-reference/report_principles.md    共用核心原则（结论>数量、三段式、聚合、可读性、链接核实…）
-reference/daily_report.md         日报 prompt
-reference/weekly_report.md        周报 prompt
-reference/project_categories.md   公司/个人 + 主线/调研/支线 的归类先验（用户可维护）
+SKILL.md                              编排：选模式 → 采集 → 写报告 + 自进化
+scripts/collect_week.py               采集器（按周/单日截断、分叉去重、头尾抓取、链接抽取、密钥脱敏）
+reference/report_principles.md        共用核心原则（结论>数量、三段式、聚合、极简、可读性、风险同步、人物提取…）
+reference/daily_report.md             日报 prompt
+reference/weekly_report.md            周报 prompt（含脱敏 few-shot 范例）
+reference/project_categories.example.md   公司/个人 + 本人身份 归类模板（复制为 project_categories.md 使用）
+reference/learned_preferences.example.md  自进化偏好日志模板（复制为 learned_preferences.md 使用）
+（本地生成、不入库：project_categories.md、learned_preferences.md、state/、examples/、*.json）
 ```
 
 ## ⚠️ 安全与同步风险（重要）
@@ -78,9 +96,9 @@ reference/project_categories.md   公司/个人 + 主线/调研/支线 的归类
 - **不要提交会话数据 / 中间产物**：采集器输出的 JSON 与生成的报告可能仍含敏感信息或公司内部内容。
   **切勿把 `*.json` 原始数据或未经审阅的报告 commit/同步到任何仓库**（本仓库 `.gitignore` 已忽略它们）。
 - **报告含公司内部信息**：生成的日/周报会包含指标、MR/Notion 链接、项目名等。**外发前自行审阅、按需脱敏**。
-- **个性化配置**：`reference/project_categories.md` 是个人/公司归属配置。本仓库内是**通用模板**；
-  你本机改写后的真实版本含内部信息，**不要回传到公开仓库**。
-- **本仓库不含任何会话数据**：只有 skill 代码与 prompt。
+- **个性化/自进化文件本地化**：`project_categories.md`、`learned_preferences.md`、`state/`、`examples/`
+  含个人/内部信息，均**本地保存、已 gitignore**；仓库只有 `*.example` 模板，不会回传你的真实配置。
+- **本仓库不含任何会话数据**：只有 skill 代码、prompt 与模板。
 
 ## 说明
 

@@ -97,8 +97,35 @@ Core rules (full detail in `report_principles.md`):
 After rendering, offer to: switch mode (日报 ↔ 周报), regenerate for another
 day/week, or save to a file.
 
+## Self-evolution (do these every run)
+
+The skill learns instead of being re-taught. Personal/evolving files live locally and
+are gitignored (seeded from committed `*.example` files on first use — if a real file is
+missing, copy its `.example`).
+
+1. **Learned preferences** — BEFORE writing, read `reference/learned_preferences.md` and
+   apply it (it OVERRIDES the generic rules on conflict; newest wins). AFTER the user
+   corrects/rejects something or states a new preference, APPEND one line
+   (`- [YYYY-MM-DD] <一句话可执行偏好>`) to that file so it sticks next time.
+2. **Cross-week continuity** — at the START of a weekly, read `state/last_week.json` (per
+   公司/个人: previous `进行中` + `下周重点`). Open each report with a brief
+   **「上周计划完成情况」** that marks each prior item ✅完成 / 🔶部分 / ⬜未动 (cross-checked
+   against this week's 本周完成), and carry unfinished ones into this week's 进行中/下周重点.
+   At the END, write this week's `进行中`/`下周重点` (both categories) back to
+   `state/last_week.json` for next time. (Daily mode skips this.)
+3. **Self-critique before presenting** — run the checklist and FIX violations before
+   showing the user: (a) same-initiative phases merged into one item (not two)?
+   (b) each item ≈3 sentences, 总结 1 sentence? (c) team-report entries correctly
+   attributed to the target person? (d) 公司/个人 fully separate, each with its own
+   进行中/下周重点/风险同步? (e) every link is truly this item's artifact? (f) if the report
+   may be shared/synced, real numbers/secrets/internal names desensitized?
+4. **Growing example bank** — when the user approves a report ("这版可以"/"就这样"), save it
+   to `examples/` (sanitized if it may leave the machine) and prefer the most recent
+   approved example as the style anchor next time, above the canonical few-shot.
+
 ## Reference
 - `reference/report_principles.md` — shared rules + the 结论>数量 quality bar.
+- `reference/learned_preferences.md` — evolving, user-specific preference log (local).
 - `reference/daily_report.md` — daily report prompt (tiered, event-aggregated).
 - `reference/weekly_report.md` — weekly report prompt (cross-day progression merge).
 - `reference/project_categories.md` — 公司/个人 + 主线/调研/支线 classification priors.
