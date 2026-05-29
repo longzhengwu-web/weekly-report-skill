@@ -20,9 +20,14 @@ just a count of outputs (结论 > 数量). Read that file first — it is the qu
 - **If the user provides daily reports and asks for a weekly** (发日报→生成周报) →
   **weekly-from-dailies mode**: skip Step 2 (collection); the supplied daily reports
   ARE the input. Aggregate them per `reference/weekly_report.md` input option B
-  (merge same-thread items across days into progression arcs, consolidate risks,
-  re-layer 主线/调研/支线). Treat the dailies as the only source of truth; don't
-  invent facts beyond them.
+  (merge same-thread items across days into progression arcs, consolidate risks).
+  Treat the dailies as the only source of truth; don't invent facts beyond them.
+  - **If the dailies are a shared/team report (many people's entries), first do
+    人物提取** (see `report_principles.md`): keep ONLY the target person's entries
+    (the user by default — name/aliases from the user-identity memory or
+    `project_categories.md`; or whoever the user names). Attribute by the name at
+    the START of each entry; don't grab adjacent colleagues' lines or treat the
+    person merely being mentioned as ownership.
 - If ambiguous, ask which one (and which day/week) before collecting.
 
 ## Step 2 — Collect raw activity
