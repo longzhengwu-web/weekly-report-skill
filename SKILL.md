@@ -19,7 +19,8 @@ just a count of outputs (结论 > 数量). Read that file first — it is the qu
 - If the user said 周报 / weekly / "this week" → **weekly mode**.
 - **If the user provides daily reports and asks for a weekly** (发日报→生成周报) →
   **weekly-from-dailies mode**: skip Step 2 (collection); the supplied daily reports
-  ARE the input. Aggregate them per `reference/weekly_report.md` input option B
+  ARE the input (pasted text, or a file/path the user points to — Read it).
+  Aggregate them per `reference/weekly_report.md` input option B
   (merge same-thread items across days into progression arcs, consolidate risks).
   Treat the dailies as the only source of truth; don't invent facts beyond them.
   - **If the dailies are a shared/team report (many people's entries), first do
@@ -69,6 +70,9 @@ Core rules (full detail in `report_principles.md`):
 - **Each item: 做了什么 → 产出/结论 → 下一步.** Open with background/motivation, lead
   with the substantive conclusion (metrics, decisions, mechanism, impact), not a
   count of outputs (结论 > 数量). Next-steps must be concrete and prioritized.
+- **Two self-contained reports — 公司 and 个人.** Each owns the FULL set of sections;
+  ALL of 总结/本周完成/进行中/下周重点/风险同步 are written per-company and per-personal
+  — never a single global 进行中/下周重点/风险同步 shared across both.
 - **Use the standard report sections** (per `report_principles.md`): 总结 (1–2 sent
   throughline) → 本周完成 (by theme/project, ranked by importance, dense bullets with
   metrics + 相关 MR/Notion links with status; tables for eval data) → 进行中 → 下周重点
