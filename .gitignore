@@ -1,0 +1,7 @@
+.DS_Store
+__pycache__/
+*.pyc
+# never commit collected session data or generated reports
+*.json
+/reports/
+report_raw*.json

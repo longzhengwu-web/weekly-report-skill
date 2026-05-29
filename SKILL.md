@@ -1,0 +1,83 @@
+---
+name: weekly-report
+description: Generate a human-readable daily or weekly work report from the user's Claude Code session activity. Reads session transcripts, truncates to the chosen day or Monday–Sunday week, and writes a report structured as 做了什么 → 产出/结论 → 下一步, covering work content, task progress, and risks. Trigger when the user asks for a 日报 / 周报 / daily report / weekly report / "what did I work on today/this week" from their Claude sessions.
+---
+
+# Daily / Weekly Report (日报 / 周报)
+
+Build a human-readable work report from the user's Claude Code session history.
+Two modes — **daily** (one day) and **weekly** (Mon–Sun) — share the same
+requirements. Pipeline: **pick mode → collect → write report**.
+
+Both modes follow `reference/report_principles.md`: every item is
+**做了什么 → 产出/结论 → 下一步**, and must report the substantive conclusion, not
+just a count of outputs (结论 > 数量). Read that file first — it is the quality bar.
+
+## Step 1 — Pick the mode
+
+- If the user said 日报 / daily / "today" → **daily mode**.
+- If the user said 周报 / weekly / "this week" → **weekly mode**.
+- If ambiguous, ask which one (and which day/week) before collecting.
+
+## Step 2 — Collect raw activity
+
+The collector scans `~/.claude/projects/*/*.jsonl`, truncates to the window
+(local timezone), and emits a per-day digest as JSON. Save to a temp file:
+
+**Daily** (single day, defaults to today):
+```bash
+python3 ~/.claude/skills/weekly-report/scripts/collect_week.py --single-day > /tmp/report_raw.json
+# a specific day:  --single-day --date 2026-05-28
+```
+
+**Weekly** (Mon–Sun, defaults to this week):
+```bash
+python3 ~/.claude/skills/weekly-report/scripts/collect_week.py > /tmp/report_raw.json
+# last week:  --week-offset -1     a specific week:  --date 2026-05-20
+```
+
+The JSON has `mode`, `week_start`, `week_end`, `timezone`, and
+`days[date] = [session…]`. Each session bucket carries `cwd`, `first_ts`/`last_ts`,
+`user_prompts` (intent), `assistant_snippets` (outcomes), `tool_activity` (counts),
+and `files_touched`. If `day_count` is 0, tell the user there was no activity in
+that window and stop.
+
+## Step 3 — Write the report
+
+Read `reference/report_principles.md` (the quality bar) first, then the mode prompt:
+**Daily mode** → `reference/daily_report.md`; **Weekly mode** → `reference/weekly_report.md`.
+
+Core rules (full detail in `report_principles.md`):
+- **Aggregate by initiative/thread, not by session.** Cluster sessions into real
+  work threads; merge the same initiative's phases (e.g. build a feature → then
+  monitor/measure it) and its cross-day progress into ONE item that tells the arc.
+- **Each item: 做了什么 → 产出/结论 → 下一步.** Open with background/motivation, lead
+  with the substantive conclusion (metrics, decisions, mechanism, impact), not a
+  count of outputs (结论 > 数量). Next-steps must be concrete and prioritized.
+- **Layer by nature into 主线 / 调研·设计 / 支线·协作**, ranked by importance; omit
+  empty layers.
+- **End with a mandatory 风险同步 section** that consolidates the period's risks —
+  not just security but mainly progress-type: 阻塞/延期/依赖/待确认/质量/成本/安全.
+  Each: what's at risk + cause + impact + mitigation/support needed. Also note each
+  risk inline in its item. If none, say so; flag external causes (e.g. cluster
+  maintenance) as external.
+- **Split into 公司 vs 个人 reports.** Pre-classify with `reference/project_categories.md`
+  (company/personal + tier prior), present accordingly, then proactively ask the
+  user (AskUserQuestion) to confirm/adjust; write the answer back to that table.
+- **Audience = technical leader.** Precise technical prose; keep professional terms
+  and English terms as-is (don't translate); NO code-level field/variable/file
+  names, commit hashes; no colloquial/dramatic phrasing; no hype ("最大短板"/"关键
+  抓手"); no speculation ("怀疑…与 X 有关"). No overview section, no emoji in headings.
+- **Don't fabricate; verify against evidence.** Before listing a next-step, check it
+  isn't already done. Attach a link (MR/PR/Notion/doc) ONLY when evidence shows it
+  is this item's actual artifact — never by mere co-occurrence in the same session.
+  Don't expose raw session_ids or local file paths.
+
+After rendering, offer to: switch mode (日报 ↔ 周报), regenerate for another
+day/week, or save to a file.
+
+## Reference
+- `reference/report_principles.md` — shared rules + the 结论>数量 quality bar.
+- `reference/daily_report.md` — daily report prompt (tiered, event-aggregated).
+- `reference/weekly_report.md` — weekly report prompt (cross-day progression merge).
+- `reference/project_categories.md` — 公司/个人 + 主线/调研/支线 classification priors.
