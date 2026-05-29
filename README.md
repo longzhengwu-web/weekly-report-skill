@@ -69,8 +69,8 @@ reference/project_categories.md   公司/个人 + 主线/调研/支线 的归类
 
 ## ⚠️ 安全与同步风险（重要）
 
-这个 skill 读取你**全部本机 Claude Code 会话**，而会话里很可能粘贴过 API key、token、密码、
-内网地址等敏感信息。使用与同步前请注意：
+这个 skill 只读取**指定时间范围内**（单日或本周）的 Claude Code 会话，不是全部历史。但该范围内的
+会话里仍可能粘贴过 API key、token、密码、内网地址等敏感信息。使用与同步前请注意：
 
 - **密钥脱敏**：采集器已内置 best-effort 脱敏，会把常见密钥/令牌/密码（`sk-…`、`gh*_…`、
   `AKLT…`、JWT、以及 `password/secret/token/api_key/密码：…` 形式的值）替换为 `[REDACTED]`。
