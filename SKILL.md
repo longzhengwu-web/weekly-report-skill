@@ -64,12 +64,14 @@ Core rules (full detail in `report_principles.md`):
 - **Each item: 做了什么 → 产出/结论 → 下一步.** Open with background/motivation, lead
   with the substantive conclusion (metrics, decisions, mechanism, impact), not a
   count of outputs (结论 > 数量). Next-steps must be concrete and prioritized.
-- **Layer by nature into 主线 / 调研·设计 / 支线·协作**, ranked by importance; omit
-  empty layers.
+- **Use the standard report sections** (per `report_principles.md`): 总结 (1–2 sent
+  throughline) → 本周完成 (by theme/project, ranked by importance, dense bullets with
+  metrics + 相关 MR/Notion links with status; tables for eval data) → 进行中 → 下周重点
+  → 风险同步. (Daily: 今日完成 → 进行中 → 风险同步.)
 - **End with a mandatory 风险同步 section** that consolidates the period's risks —
   not just security but mainly progress-type: 阻塞/延期/依赖/待确认/质量/成本/安全.
-  Each: what's at risk + cause + impact + mitigation/support needed. Also note each
-  risk inline in its item. If none, say so; flag external causes (e.g. cluster
+  Each: what's at risk + impact + mitigation/support needed. Also note each risk
+  inline in its item. If none, say so; flag external causes (e.g. cluster
   maintenance) as external.
 - **Split into 公司 vs 个人 reports.** Pre-classify with `reference/project_categories.md`
   (company/personal + tier prior), present accordingly, then proactively ask the
