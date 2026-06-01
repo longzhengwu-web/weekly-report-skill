@@ -107,6 +107,16 @@ Core rules (full detail in `report_principles.md`):
 After rendering, offer to: switch mode (日报 ↔ 周报), regenerate for another
 day/week, or save to a file.
 
+## Step 4 — Deliver
+
+The report is meant to be sent to a leader (human-readable, covering 工作内容 / 任务进度 /
+可能风险). Two delivery rules:
+- **The report body is the work itself** (产出 + 进展 + 结论 + 风险). MR/PR/Notion links are
+  only trailing "相关：" support, never the headline.
+- **When the report lives in a doc/Notion and is sent to the leader, include that link**
+  (the leader explicitly wants 重点 +link). If you saved the report to a file/doc, surface
+  its link/path at the top or bottom so it's one click to open.
+
 ## Self-evolution (do these every run)
 
 The skill learns instead of being re-taught. Personal/evolving files live locally and
