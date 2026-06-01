@@ -5,9 +5,15 @@ description: Generate a concise, leader-facing daily or weekly work report from 
 
 # Daily / Weekly Report (日报 / 周报)
 
-Build a human-readable work report from the user's Claude Code session history.
-Two modes — **daily** (one day) and **weekly** (Mon–Sun) — share the same
-requirements. Pipeline: **pick mode → collect → write report**.
+Build a human-readable work report from the user's coding-agent session history.
+Works in **both Claude Code and Codex** (same SKILL.md format). Two modes —
+**daily** (one day) and **weekly** (Mon–Sun) — share the same requirements.
+Pipeline: **pick mode → collect → write report**.
+
+> **Paths**: scripts/files below are written as `scripts/X` / `reference/X` **relative to
+> THIS skill's folder**. Resolve them against wherever this skill is installed —
+> `~/.claude/skills/weekly-report/` (Claude Code) or `~/.codex/skills/weekly-report/` (Codex).
+> The collector reads both `~/.claude/projects` and `~/.codex/sessions` regardless of which tool runs it.
 
 Both modes follow `reference/report_principles.md`: every item is
 **做了什么 → 产出/结论 → 下一步**, and must report the substantive conclusion, not
@@ -31,7 +37,7 @@ just a count of outputs (结论 > 数量). Read that file first — it is the qu
     deterministic extractor** to avoid 张冠李戴 (grabbing colleagues' items) — this is
     the #1 failure mode when summarizing a week of team reports:
     ```bash
-    python3 ~/.claude/skills/weekly-report/scripts/extract_person.py \
+    python3 scripts/extract_person.py \
       --name "<你的英文名>" [--name <中文名/别名>] --file <team_report.txt>   # or pipe via stdin
     ```
     It splits the report into name-led blocks and keeps ONLY blocks whose leading
@@ -51,13 +57,13 @@ The collector scans **both** Claude Code (`~/.claude/projects/*/*.jsonl`) and Co
 
 **Daily** (single day, defaults to today):
 ```bash
-python3 ~/.claude/skills/weekly-report/scripts/collect_week.py --single-day > /tmp/report_raw.json
+python3 scripts/collect_week.py --single-day > /tmp/report_raw.json
 # a specific day:  --single-day --date 2026-05-28
 ```
 
 **Weekly** (Mon–Sun, defaults to this week):
 ```bash
-python3 ~/.claude/skills/weekly-report/scripts/collect_week.py > /tmp/report_raw.json
+python3 scripts/collect_week.py > /tmp/report_raw.json
 # last week:  --week-offset -1     a specific week:  --date 2026-05-20
 ```
 

@@ -49,14 +49,24 @@ python3 scripts/collect_week.py --date 2026-05-20
 每个 thread 含 `user_prompts`、`assistant_snippets`（含会话结尾结论）、`tool_activity`、
 `files_touched`、`links`（MR/PR/Notion/文档等可追溯链接）；分叉会话已按首条实质 prompt 去重合并。
 
-## 安装
+## 安装（Claude Code 与 Codex 通用）
 
-复制到 Claude Code 的 skills 目录：
+同一套 `SKILL.md` 格式，两个工具都能自动发现，复制到对应 skills 目录即可：
 
 ```bash
 git clone <this-repo> weekly-report
+
+# Claude Code
 cp -r weekly-report ~/.claude/skills/weekly-report
+
+# Codex（VSCode Codex 插件 / CLI；CODEX_HOME 未设时默认 ~/.codex）
+cp -r weekly-report ~/.codex/skills/weekly-report
 ```
+
+> 想两个工具共用一份（共享 learned_preferences、配置不分叉）：装在一处，另一处用软链接指过去，例如
+> `ln -s ~/.claude/skills/weekly-report ~/.codex/skills/weekly-report`。
+> SKILL.md 里脚本用相对路径（`scripts/…`），两个安装位置都能解析；采集器无论哪个工具运行都会同时读
+> `~/.claude/projects` 和 `~/.codex/sessions`。
 
 ## 自进化（越用越懂你）
 
