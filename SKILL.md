@@ -17,6 +17,10 @@ just a count of outputs (结论 > 数量). Read that file first — it is the qu
 
 - If the user said 日报 / daily / "today" → **daily mode**.
 - If the user said 周报 / weekly / "this week" → **weekly mode**.
+- **If the user asks to evaluate/score/critique an existing report or entry** (评一下 / 打分 /
+  这份周报/日报质量如何) → **judge mode**: skip collection; apply `reference/judge.md`
+  (weekly = 4-dimension scoring + verdict; daily/single-entry = 评级 + 做得好的/需改进/建议修改版).
+  Works on a pasted report or one you just generated.
 - **If the user provides daily reports and asks for a weekly** (发日报→生成周报) →
   **weekly-from-dailies mode**: skip Step 2 (collection); the supplied daily reports
   ARE the input (pasted text, or a file/path the user points to — Read it).
@@ -140,12 +144,13 @@ missing, copy its `.example`).
    against this week's 本周完成), and carry unfinished ones into this week's 进行中/下周重点.
    At the END, write this week's `进行中`/`下周重点` (both categories) back to
    `state/last_week.json` for next time. (Daily mode skips this.)
-3. **Self-critique before presenting** — run the checklist and FIX violations before
-   showing the user: (a) same-initiative phases merged into one item (not two)?
-   (b) each item ≈3 sentences, 总结 1 sentence? (c) team-report entries correctly
-   attributed to the target person? (d) 公司/个人 fully separate, each with its own
-   进行中/下周重点/风险同步? (e) every link is truly this item's artifact? (f) if the report
-   may be shared/synced, real numbers/secrets/internal names desensitized?
+3. **Self-critique before presenting** — score the draft against `reference/judge.md`
+   dimensions (weekly: 完整性/数据支撑/叙事清晰度/风险意识; daily: each item 三段式 + 下一步 +
+   结论>数量) and FIX low-scoring items before showing the user (don't show the score unless
+   asked). Also check: (a) same-initiative phases merged (not two)? (b) each item concise,
+   总结 1 sentence? (c) team-report entries correctly attributed (no 张冠李戴)? (d) 公司/个人
+   fully separate? (e) every link truly this item's artifact, MR only as support not headline?
+   (f) if shareable, real numbers/secrets/internal names desensitized?
 4. **Growing example bank** — when the user approves a report ("这版可以"/"就这样"), save it
    to `examples/` (sanitized if it may leave the machine) and prefer the most recent
    approved example as the style anchor next time, above the canonical few-shot.
@@ -153,6 +158,7 @@ missing, copy its `.example`).
 ## Reference
 - `reference/report_principles.md` — shared rules + the 结论>数量 quality bar.
 - `reference/styles.md` — output style presets (正常/简洁/要点, apply to 日报+周报) + per-style demo.
+- `reference/judge.md` — quality rubric (weekly 4-dim score / daily per-entry 评级 + 修改版); used for self-critique and on-demand 评分.
 - `reference/learned_preferences.md` — evolving, user-specific preference log (local).
 - `reference/daily_report.md` — daily report prompt (tiered, event-aggregated).
 - `reference/weekly_report.md` — weekly report prompt (cross-day progression merge).
