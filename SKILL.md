@@ -86,12 +86,12 @@ Core rules (full detail in `report_principles.md`):
 - **Use the standard report sections** (per `report_principles.md`): 总结 (1–2 sent
   throughline) → 本周完成 (by theme/project, ranked by importance, dense bullets with
   metrics + 相关 MR/Notion links with status; tables for eval data) → 进行中 → 下周重点
-  → 风险同步. (Daily: 今日完成 → 进行中 → 风险同步.)
-- **End with a mandatory 风险同步 section** that consolidates the period's risks —
+  → 风险同步. **Daily uses 今日完成 ONLY** (per-item 下一步; risks folded into 下一步) —
+  no 进行中/下周重点/风险同步 sections (those are weekly-only).
+- **Weekly ends with a mandatory 风险同步 section** consolidating the week's risks —
   not just security but mainly progress-type: 阻塞/延期/依赖/待确认/质量/成本/安全.
-  Each: what's at risk + impact + mitigation/support needed. Also note each risk
-  inline in its item. If none, say so; flag external causes (e.g. cluster
-  maintenance) as external.
+  Each: what's at risk + impact + mitigation/support needed. If none, say so; flag
+  external causes (e.g. cluster maintenance) as external. (Daily: no such section.)
 - **Split into 公司 vs 个人 reports.** Pre-classify with `reference/project_categories.md`
   (company/personal + tier prior), present accordingly, then proactively ask the
   user (AskUserQuestion) to confirm/adjust; write the answer back to that table.
