@@ -58,11 +58,11 @@ that window and stop.
 
 ## Step 2.5 — Pick the output style
 
-Before writing the full report, offer the output style (see `reference/styles.md`):
-render the SAME representative item in the 3 styles (A 详细 / B 简约 / C 要点速览) as a
-quick demo, then ask via AskUserQuestion which to use. Default to the user's last choice
-recorded in `learned_preferences.md` (else 详细版). Record the chosen style back to
-`learned_preferences.md`. If the user already named a style in their request, skip the ask.
+Before writing the full report (daily OR weekly — both apply), offer the output style
+(see `reference/styles.md`): render the SAME representative item in the 3 styles
+(正常版 / 简洁版 / 要点速览版) as a quick demo, then ask via AskUserQuestion which to use.
+Default to the user's last choice in `learned_preferences.md` (else 正常版). Record the
+chosen style back to `learned_preferences.md`. If the user already named a style, skip the ask.
 
 ## Step 3 — Write the report
 
@@ -135,7 +135,7 @@ missing, copy its `.example`).
 
 ## Reference
 - `reference/report_principles.md` — shared rules + the 结论>数量 quality bar.
-- `reference/styles.md` — output style presets (详细/简约/要点) + per-style demo.
+- `reference/styles.md` — output style presets (正常/简洁/要点, apply to 日报+周报) + per-style demo.
 - `reference/learned_preferences.md` — evolving, user-specific preference log (local).
 - `reference/daily_report.md` — daily report prompt (tiered, event-aggregated).
 - `reference/weekly_report.md` — weekly report prompt (cross-day progression merge).
