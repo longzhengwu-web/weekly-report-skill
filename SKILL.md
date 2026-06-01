@@ -144,12 +144,20 @@ missing, copy its `.example`).
    against this week's 本周完成), and carry unfinished ones into this week's 进行中/下周重点.
    At the END, write this week's `进行中`/`下周重点` (both categories) back to
    `state/last_week.json` for next time. (Daily mode skips this.)
-3. **Self-critique before presenting** — score the draft against `reference/judge.md`
-   dimensions (weekly: 完整性/数据支撑/叙事清晰度/风险意识; daily: each item 三段式 + 下一步 +
-   结论>数量) and FIX low-scoring items before showing the user (don't show the score unless
-   asked). Also check: (a) same-initiative phases merged (not two)? (b) each item concise,
-   总结 1 sentence? (c) team-report entries correctly attributed (no 张冠李戴)? (d) 公司/个人
-   fully separate? (e) every link truly this item's artifact, MR only as support not headline?
+3. **Self-critique before presenting (always) + judge-display preference (ask once,
+   then remember).** Always score the draft internally against `reference/judge.md`
+   (weekly: 完整性/数据支撑/叙事清晰度/风险意识; daily: each item 三段式 + 下一步 + 结论>数量)
+   and FIX low-scoring items before showing the user. Whether to ALSO show the score block
+   to the user is a persisted preference:
+   - Read `learned_preferences.md` for `judge 展示偏好`. **If set, follow it silently — do NOT ask.**
+   - **If unset, ask ONCE** (AskUserQuestion): 每次生成都附质量评分 / 仅在我要时评分 / 不附评分;
+     write the answer to `learned_preferences.md` and never ask again.
+   - `每次附` → append the 4-dim (weekly) or per-entry (daily) score after the report.
+     `仅按需` → don't show unless the user asks "评分/judge". `不附` → never auto-show.
+   Self-critique fixes happen regardless of this display preference. Also check:
+   (a) same-initiative phases merged (not two)? (b) each item concise, 总结 1 sentence?
+   (c) team-report entries correctly attributed (no 张冠李戴)? (d) 公司/个人 fully separate?
+   (e) every link truly this item's artifact, MR only as support not headline?
    (f) if shareable, real numbers/secrets/internal names desensitized?
 4. **Growing example bank** — when the user approves a report ("这版可以"/"就这样"), save it
    to `examples/` (sanitized if it may leave the machine) and prefer the most recent
