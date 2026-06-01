@@ -1,57 +1,40 @@
 # 周报 skill（weekly-report）
 
-一个 [Claude Code](https://claude.com/claude-code) skill（也兼容 [Codex](https://developers.openai.com/codex/)）：
-读取本机的 Claude Code / Codex 会话记录，按**单日**或**周一至周日**截断，自动生成**给技术型 leader 看**的可读日报 / 周报。
+一个**给技术型 leader 看**的日报 / 周报生成 skill，**Claude Code 与 Codex 通用**（同一套 `SKILL.md`）。
+它读取本机的 coding-agent 会话记录，或你贴进来的团队日报，自动产出结构清晰、结论优先、可读性强的工作报告。
 
-## 它做什么
+---
 
-- **数据源（双源）**：扫描 Claude Code（`~/.claude/projects/*/*.jsonl`）与 Codex
-  （`~/.codex/sessions/**/rollout-*.jsonl`）的本机 transcript，按本地时区切到指定的一天/一周，
-  按天分组抽取信号（意图、产出要点、改动文件、工具活动、可追溯链接）。也可直接喂团队日报（自动按本人姓名抽条）。
-- **两种模式**：日报（单日）/ 周报（Mon–Sun），要求一致。
-- **可选风格**：生成前可选 详细 / 简约 / 要点速览 三种风格（见 `reference/styles.md`）。
-- **结构**：报告分**公司 / 个人**两份；每份 总结 → 本周完成（按主题、按重要性）→ 进行中 → 下周重点 → 风险同步。
-- **每条三段式**：做了什么 → 产出/结论 → 下一步。
+## 能做什么（4 种用法）
 
-## 设计原则（核心质量约束）
+| # | 用法 | 怎么触发 | 说明 |
+|---|---|---|---|
+| 1 | **自动生成日/周报** | "出今天日报""出本周周报""出上周周报" | 读 Claude Code + Codex 会话，按单日 / 周一至周日截断 |
+| 2 | **团队日报 → 本人周报** | 贴团队日报（或给文件路径）+ "生成我的周报" | 先用脚本**确定性抽出本人条目**（防张冠李戴），再聚合成周报 |
+| 3 | **给报告打分（judge）** | 贴一份日/周报 + "评一下 / 打分" | 按固定维度评分 + 指出问题 + 给修改版 |
+| 4 | **生成时自带质量自查** | 在 1、2 过程中 | 内部自查自修恒做；**是否展示评分**首次问一次、记住后不再问 |
 
-- **结论 > 数量**：只报"做了多少"不报"得出什么结论"不合格——必须给指标、决策、机制、影响。
-- **按主线/事件聚合**：同一件事的不同阶段（如"做功能 → 上线实测/监控"）合并成一条讲来龙去脉，不按会话拆。
-- **技术型 leader 视角**：精准技术书面语，保留专业 / 英文术语，不出现代码级字段/变量/文件名，不口语、不吹捧、不臆测。
-- **不杜撰、对照证据**：内容可追溯到会话证据；下一步先核对是否已做过；链接只在确属本条产物时附。
+---
 
-## 用法
+## 核心特性
 
-安装后（见下），在 Claude Code 里直接说：
+- **双源采集**：同时读 Claude Code（`~/.claude/projects`）与 Codex（`~/.codex/sessions`）的本机会话；按本地时区切到指定日/周，抽取意图、产出要点、改动文件、工具活动、可追溯链接。
+- **公司 / 个人分开**：两份独立报告，各自完整。
+- **周报结构**：总结 → 本周完成（按主线/调研/支线，按重要性排序）→ 进行中 → 下周重点 → 风险同步。
+- **日报结构**：只有「今日完成」（下一步/风险并进条目）。
+- **三段式 + 结论>数量**：每条 = 做了什么 → 产出/结论 → 下一步；只报数量不报结论判为不合格。
+- **三档风格**（生成前可选，记住偏好）：正常版 / 简洁版 / 要点速览版。
+- **技术 leader 文风**：保留专业 / 英文术语，不出现代码级字段，不口语、不吹捧、不臆测。
+- **聚合不堆叠**：同一主线的不同阶段（功能→实测）合并成一条；**跨源（Claude/Codex）同一件事去重合并、正文不标来源**。
+- **人物提取防张冠李戴**：团队日报按"行首人名切块"，只留本人的块（含本人在列的协作条），跨多天，确定性、宁漏不错。
+- **MR 只作 support**：正文讲工作内容/产出/进展/风险，MR/链接仅在条目末尾"相关："佐证；发 leader 时带 doc/Notion link。
+- **质量评分（judge）**：周报四维（完整性 / 数据支撑 / 叙事清晰度 / 风险意识）；日报逐条评级 + 建议修改版。
+- **密钥脱敏**：采集器对会话里的 API key / token / 密码做 best-effort 脱敏。
+- **自进化**：从你的纠正里学习（`learned_preferences`）、跨周连续性、生成后自查自修、成长型 few-shot。
 
-```
-出本周周报          # 本周 Mon–Sun
-出上周周报
-出今天的日报
-出 2026-05-28 的日报
-```
-
-或直接跑采集器拿原始数据：
-
-```bash
-# 本周（Mon–Sun）
-python3 scripts/collect_week.py
-# 上周
-python3 scripts/collect_week.py --week-offset -1
-# 单日（默认今天）
-python3 scripts/collect_week.py --single-day
-# 指定某天 / 指定某周
-python3 scripts/collect_week.py --single-day --date 2026-05-28
-python3 scripts/collect_week.py --date 2026-05-20
-```
-
-采集器输出 JSON：`mode` / `week_start` / `week_end` / `timezone` / `days[date] = [thread…]`，
-每个 thread 含 `user_prompts`、`assistant_snippets`（含会话结尾结论）、`tool_activity`、
-`files_touched`、`links`（MR/PR/Notion/文档等可追溯链接）；分叉会话已按首条实质 prompt 去重合并。
+---
 
 ## 安装（Claude Code 与 Codex 通用）
-
-同一套 `SKILL.md` 格式，两个工具都能自动发现，复制到对应 skills 目录即可：
 
 ```bash
 git clone <this-repo> weekly-report
@@ -63,59 +46,80 @@ cp -r weekly-report ~/.claude/skills/weekly-report
 cp -r weekly-report ~/.codex/skills/weekly-report
 ```
 
-> 想两个工具共用一份（共享 learned_preferences、配置不分叉）：装在一处，另一处用软链接指过去，例如
+> **想两个工具共用一份**（自进化偏好/配置不分叉）：装在一处，另一处软链接过去：
 > `ln -s ~/.claude/skills/weekly-report ~/.codex/skills/weekly-report`。
-> SKILL.md 里脚本用相对路径（`scripts/…`），两个安装位置都能解析；采集器无论哪个工具运行都会同时读
-> `~/.claude/projects` 和 `~/.codex/sessions`。
+> SKILL.md 里脚本用相对路径（`scripts/…`），两个位置都能解析。
+> 若 Codex 不识别软链接，改用上面的实拷贝即可。
+
+### 首次配置（个人化，本地不入库）
+```bash
+cd <skill 目录>/reference
+cp project_categories.example.md project_categories.md   # 填本人身份 + 公司/个人项目归属
+cp learned_preferences.example.md learned_preferences.md  # 可留空，之后自动积累
+```
+
+---
+
+## 在 VSCode Codex 插件里使用
+
+Codex 的 skill 是**描述触发、自动发现**的——没有专门命令，用自然语言描述任务即可。
+
+1. **重载让 Codex 发现 skill**（新装的必须）：`Cmd+Shift+P` → "Reload Window"，或重开 Codex 会话。
+   （Codex 官方说法：*Restart Codex to pick up new skills*。）
+2. **确认已发现**：在 Codex 里问 "你有没有 weekly-report skill？" 能列出即成功。
+3. **自然语言触发**，例如：
+   - `出我今天的日报` / `生成本周周报` / `出上周周报`
+   - `把这份团队日报总结成我的周报`（贴团队日报或给文件路径）
+   - `评一下这份周报质量`（贴报告）
+4. 脚本读本地会话文件时 Codex 可能弹**沙箱授权**，同意即可。
+
+## 在 Claude Code 里使用
+直接说"出本周周报 / 今天日报 / 把团队日报生成我的周报 / 评一下这份日报"即可，Claude 按 description 触发。
+
+---
+
+## 设计原则（核心质量约束）
+
+- **结论 > 数量**：必须给指标、决策、机制、影响，而非"做了 N 条"。
+- **按主线/事件聚合**：同一件事的不同阶段合并成一条讲来龙去脉，不按会话/不按天拆。
+- **技术 leader 视角**：精准技术书面语，专业/英文术语保留，无代码字段、无口语、无吹捧、无臆测。
+- **不杜撰、对照证据**：内容可追溯到会话证据；下一步先核对是否已做过；链接只在确属本条产物时附。
+- **防张冠李戴**：团队日报严格按行首人名归属，成稿前逐条核对，宁漏不错。
 
 ## 自进化（越用越懂你）
-
-skill 会从反馈里学习，而不是每次重新教：
-
-- **学习偏好回路**：`reference/learned_preferences.md` 是一份偏好日志，优先级高于通用规则。你每次纠正/表达
-  新偏好，模型就追加一条，下次自动生效。
-- **跨周连续性**：`state/last_week.json` 存上周的「进行中/下周重点」；本周开头自动给出「上周计划完成情况」
-  并继承未完成项，报告从快照变连续线程。
-- **生成后自查自修**：出报告前强制走硬清单（同主线合并、≤3 句、人物归属、公司/个人分开、链接核实、对外脱敏），
-  违反就改了再给你。
-- **成长型 few-shot**：你认可的报告会存进 `examples/` 作为下次风格锚点。
+- **学习偏好**：`reference/learned_preferences.md` 优先级高于通用规则；你每次纠正就追加一条、下次自动生效。
+- **跨周连续性**：`state/last_week.json` 存上周「进行中/下周重点」，本周开头自动给「上周计划完成情况」。
+- **生成后自查自修**：出报告前按 `judge.md` 维度内部打分、修掉短板再给你。
+- **成长型 few-shot**：你认可的报告存进 `examples/` 作风格锚点。
 
 > 以上"会被写入/含个人数据"的文件（`learned_preferences.md`、`project_categories.md`、`state/`、`examples/`）
-> 都**本地保存、已被 gitignore**；仓库只放对应的 `*.example` 模板。**首次使用**：把 `*.example` 复制成去掉
-> `.example` 的同名文件即可（skill 也会在缺失时自动从模板初始化）。
+> 均**本地保存、已 gitignore**；仓库只放 `*.example` 模板。
 
-## 结构
+---
+
+## ⚠️ 安全与同步风险
+
+skill 只读取**指定时间范围内**（单日或本周）的会话，但该范围内仍可能粘贴过 API key、密码、内网地址等敏感信息：
+
+- **密钥脱敏是 best-effort、非 100%**，不要依赖它处理高敏数据。
+- **不要把采集器输出的 `*.json` 或未审阅报告 commit/同步**到任何仓库（`.gitignore` 已忽略）。
+- 报告含内部信息，**外发前自行审阅、按需脱敏**；公开仓库里的示例/few-shot 一律用占位符。
+- 本仓库**不含任何会话数据**，只有 skill 代码、prompt 与模板。
+
+---
+
+## 目录结构
 
 ```
-SKILL.md                              编排：选模式 → 采集 → 写报告 + 自进化
-scripts/collect_week.py               采集器（按周/单日截断、分叉去重、头尾抓取、链接抽取、密钥脱敏）
-scripts/extract_person.py             团队日报→确定性抽取本人条目（防张冠李戴，用于"发团队日报生成本人周报"）
-reference/report_principles.md        共用核心原则（结论>数量、三段式、聚合、极简、可读性、风险同步、人物提取…）
-reference/daily_report.md             日报 prompt
-reference/weekly_report.md            周报 prompt（含脱敏 few-shot 范例）
-reference/styles.md                   输出风格预设（详细/简约/要点，生成前可选）
-reference/judge.md                    质量评分标准（周报四维打分 / 日报逐条评级+修改版；自查与按需评审）
-reference/project_categories.example.md   公司/个人 + 本人身份 归类模板（复制为 project_categories.md 使用）
-reference/learned_preferences.example.md  自进化偏好日志模板（复制为 learned_preferences.md 使用）
+SKILL.md                              编排：选模式 → 采集 → 写报告 → 自查/judge → 投递；含 4 种用法
+scripts/collect_week.py               双源采集器（按周/单日截断、分叉去重、头尾抓取、链接抽取、密钥脱敏）
+scripts/extract_person.py             团队日报→确定性抽取本人条目（防张冠李戴）
+reference/report_principles.md        核心原则（结论>数量、三段式、聚合、可读性、风险同步、人物提取、借鉴优秀写法…）
+reference/daily_report.md             日报 prompt（今日完成）
+reference/weekly_report.md            周报 prompt（五板块 + 脱敏 few-shot 范例）
+reference/styles.md                   输出风格预设（正常/简洁/要点）
+reference/judge.md                    质量评分标准（周报四维 / 日报逐条 + 修改版）
+reference/project_categories.example.md   公司/个人 + 本人身份 归类模板
+reference/learned_preferences.example.md  自进化偏好日志模板
 （本地生成、不入库：project_categories.md、learned_preferences.md、state/、examples/、*.json）
 ```
-
-## ⚠️ 安全与同步风险（重要）
-
-这个 skill 只读取**指定时间范围内**（单日或本周）的 Claude Code 会话，不是全部历史。但该范围内的
-会话里仍可能粘贴过 API key、token、密码、内网地址等敏感信息。使用与同步前请注意：
-
-- **密钥脱敏**：采集器已内置 best-effort 脱敏，会把常见密钥/令牌/密码（`sk-…`、`gh*_…`、
-  `AKLT…`、JWT、以及 `password/secret/token/api_key/密码：…` 形式的值）替换为 `[REDACTED]`。
-  但这是尽力而为、非 100% 兜底，**不要依赖它处理高度敏感数据**。
-- **不要提交会话数据 / 中间产物**：采集器输出的 JSON 与生成的报告可能仍含敏感信息或公司内部内容。
-  **切勿把 `*.json` 原始数据或未经审阅的报告 commit/同步到任何仓库**（本仓库 `.gitignore` 已忽略它们）。
-- **报告含公司内部信息**：生成的日/周报会包含指标、MR/Notion 链接、项目名等。**外发前自行审阅、按需脱敏**。
-- **个性化/自进化文件本地化**：`project_categories.md`、`learned_preferences.md`、`state/`、`examples/`
-  含个人/内部信息，均**本地保存、已 gitignore**；仓库只有 `*.example` 模板，不会回传你的真实配置。
-- **本仓库不含任何会话数据**：只有 skill 代码、prompt 与模板。
-
-## 说明
-
-- 报告完全基于本机会话记录、本地生成，skill 本身**不外传**任何数据。
-- 数据源、归类配置都可按需修改。
