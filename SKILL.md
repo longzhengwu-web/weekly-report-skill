@@ -23,12 +23,19 @@ just a count of outputs (结论 > 数量). Read that file first — it is the qu
   Aggregate them per `reference/weekly_report.md` input option B
   (merge same-thread items across days into progression arcs, consolidate risks).
   Treat the dailies as the only source of truth; don't invent facts beyond them.
-  - **If the dailies are a shared/team report (many people's entries), first do
-    人物提取** (see `report_principles.md`): keep ONLY the target person's entries
-    (the user by default — name/aliases from the user-identity memory or
-    `project_categories.md`; or whoever the user names). Attribute by the name at
-    the START of each entry; don't grab adjacent colleagues' lines or treat the
-    person merely being mentioned as ownership.
+  - **If the dailies are a shared/team report (many people's entries), FIRST run the
+    deterministic extractor** to avoid 张冠李戴 (grabbing colleagues' items) — this is
+    the #1 failure mode when summarizing a week of team reports:
+    ```bash
+    python3 ~/.claude/skills/weekly-report/scripts/extract_person.py \
+      --name "<你的英文名>" [--name <中文名/别名>] --file <team_report.txt>   # or pipe via stdin
+    ```
+    It splits the report into name-led blocks and keeps ONLY blocks whose leading
+    name(s) include the target (incl. collaboration lines where the target is one of
+    the leading names), across all dates. Aggregate THAT output into the weekly.
+    Get the target name/aliases from the user-identity memory or `project_categories.md`
+    「本人身份」, or whoever the user names. The `report_principles.md` 人物提取 rules are
+    the fallback for anything the script can't cleanly split.
 - If ambiguous, ask which one (and which day/week) before collecting.
 
 ## Step 2 — Collect raw activity

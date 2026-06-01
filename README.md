@@ -79,6 +79,7 @@ skill 会从反馈里学习，而不是每次重新教：
 ```
 SKILL.md                              编排：选模式 → 采集 → 写报告 + 自进化
 scripts/collect_week.py               采集器（按周/单日截断、分叉去重、头尾抓取、链接抽取、密钥脱敏）
+scripts/extract_person.py             团队日报→确定性抽取本人条目（防张冠李戴，用于"发团队日报生成本人周报"）
 reference/report_principles.md        共用核心原则（结论>数量、三段式、聚合、极简、可读性、风险同步、人物提取…）
 reference/daily_report.md             日报 prompt
 reference/weekly_report.md            周报 prompt（含脱敏 few-shot 范例）
